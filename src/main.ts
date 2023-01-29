@@ -5,7 +5,9 @@ import './assets/base.css'
 
 // 開発環境のみMSW起動
 if (process.env.NODE_ENV === 'development') {
-  worker.start()
+  worker.start({
+    onUnhandledRequest: 'bypass',
+  })
 }
 
 createApp(App).mount('#app')

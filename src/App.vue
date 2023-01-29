@@ -1,23 +1,39 @@
 <template>
-  <div>
-    {{ hello.message }}
-  </div>
+  <ul v-if="todos.length > 0">
+    <template v-for="todo in todos">
+      <li>{{ todo.title }}</li>
+    </template>
+  </ul>
+  <form @submit.prevent="handleSubmit">
+    <input type="text" v-model="inputValue" />
+    <button type="submit">追加</button>
+  </form>
 </template>
 
-<script lang="ts">
-import { reactive, defineComponent, onMounted } from "vue";
+<script setup lang="ts">
+import { ref, onMounted } from "vue";
+export type Todo = {
+  id: number;
+  title: string;
+  done: boolean;
+};
 
-export default defineComponent({
-  name: "App",
-  setup() {
-    const hello = reactive({ message: "" });
+const todos = ref<Todo[]>([]);
+const inputValue = ref<string>("");
 
-    onMounted(async () => {
-      const res = await fetch("/hello");
-      hello.message = await res.json();
-    });
-
-    return { hello };
-  },
+onMounted(async () => {
+  const res: Response = await fetch("/todos");
+  todos.value = await res.json();
 });
+
+const handleSubmit = async () => {
+  const res: Response = await fetch("/todos", {
+    method: "POST",
+    body: JSON.stringify({
+      todo: inputValue.value,
+    }),
+  });
+  const addTodo = await res.json();
+  todos.value = [...todos.value, addTodo];
+};
 </script>
