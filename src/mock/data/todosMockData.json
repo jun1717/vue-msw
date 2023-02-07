@@ -1,17 +1,14 @@
 [
   {
     "id": 1,
-    "title": "title-1",
-    "done": false
+    "title": "title-1"
   },
   {
     "id": 2,
-    "title": "title-2",
-    "done": false
+    "title": "title-2"
   },
   {
     "id": 3,
-    "title": "title-3",
-    "done": false
+    "title": "title-3"
   }
 ]

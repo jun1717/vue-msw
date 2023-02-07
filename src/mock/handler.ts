@@ -1,27 +1,26 @@
-import {rest} from "msw";
+import { rest } from "msw";
 import todosMockData from "./data/todosMockData.json"
-import type {Todo } from "../App.vue"
+import type { Todo as postResponseBody } from "../App.vue"
 
-interface todoBody {
+interface postRequestBody {
   todo: string
 }
 export const handlers = [
-  rest.get('/todos', (req, res, ctx) => {
+  rest.get<never, never, postResponseBody[]>('/todos', (req, res, ctx) => {
     return res(
+      ctx.delay(2000),
       ctx.status(200),
       ctx.json(todosMockData)
     )
   }),
-  rest.post<todoBody, never, Todo>('/todos', async(req, res, ctx) => {
-    const { todo } = await req.json();
-    const todoObj: Todo = { 
-      id: 100,
-      title: todo,
-      done: false,
-    }
+  rest.post<postRequestBody, never, postResponseBody>('/todos', async(req, res, ctx) => {
+    const { todo } = await req.json<postRequestBody>();
     return res(
       ctx.status(201),
-      ctx.json(todoObj)
+      ctx.json({ 
+        id: Math.random(),
+        title: todo,
+      })
     )
   })
 ]

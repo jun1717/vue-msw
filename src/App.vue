@@ -1,9 +1,14 @@
 <template>
-  <ul v-if="todos.length > 0">
-    <template v-for="todo in todos">
-      <li>{{ todo.title }}</li>
-    </template>
-  </ul>
+  <template v-if="apiLoading">
+    <div>Loading...</div>
+  </template>
+  <template v-else>
+    <ul v-if="todos.length > 0">
+      <template v-for="todo in todos">
+        <li>{{ todo.title }}</li>
+      </template>
+    </ul>
+  </template>
   <form @submit.prevent="handleSubmit">
     <input type="text" v-model="inputValue" />
     <button type="submit">追加</button>
@@ -15,14 +20,16 @@ import { ref, onMounted } from "vue";
 export type Todo = {
   id: number;
   title: string;
-  done: boolean;
 };
 
+const apiLoading = ref<Boolean>(false);
 const todos = ref<Todo[]>([]);
 const inputValue = ref<string>("");
 
 onMounted(async () => {
+  apiLoading.value = true;
   const res: Response = await fetch("/todos");
+  apiLoading.value = false;
   todos.value = await res.json();
 });
 
