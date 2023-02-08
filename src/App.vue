@@ -26,21 +26,48 @@ const apiLoading = ref<Boolean>(false);
 const todos = ref<Todo[]>([]);
 const inputValue = ref<string>("");
 
-onMounted(async () => {
+onMounted(() => {
   apiLoading.value = true;
-  const res: Response = await fetch("/todos");
-  apiLoading.value = false;
-  todos.value = await res.json();
+  fetch("/todos")
+    .then((res) => {
+      if (!res.ok) {
+        throw new Error(res.statusText);
+      } else {
+        return res.json().then((data: Todo[]) => {
+          todos.value = data;
+        });
+      }
+    })
+    .catch((error) => {
+      console.log(error);
+    })
+    .finally(() => {
+      apiLoading.value = false;
+    });
 });
 
-const handleSubmit = async () => {
-  const res: Response = await fetch("/todos", {
+const handleSubmit = () => {
+  apiLoading.value = true;
+  fetch("/todos", {
     method: "POST",
     body: JSON.stringify({
       todo: inputValue.value,
     }),
-  });
-  const addTodo = await res.json();
-  todos.value = [...todos.value, addTodo];
+  })
+    .then((res) => {
+      if (!res.ok) {
+        throw new Error(res.statusText);
+      } else {
+        return res.json().then((data: Todo) => {
+          todos.value = [...todos.value, data];
+        });
+      }
+    })
+    .catch((error) => {
+      console.log(error);
+    })
+    .finally(() => {
+      apiLoading.value = false;
+    });
 };
 </script>
